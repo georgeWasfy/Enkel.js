@@ -1,4 +1,4 @@
-import { ExpressRestServer } from "../../../restserver/ExpressRestServer";
+import { ExpressRestServer } from "../../../restServer/ExpressRestServer";
 import { setBaseUrl } from "../../http/BaseRoute";
 
 

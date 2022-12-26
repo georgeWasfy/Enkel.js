@@ -17,4 +17,4 @@ export { Get } from './lib/common/decorator/method/Get'
 
 
 
-export { ExpressRestServer } from './lib/restserver/ExpressRestServer'
+export { ExpressRestServer } from './lib/restServer/ExpressRestServer'
