@@ -11,6 +11,8 @@ export class Result {
   }
   
   private Success(response: express.Response, logger: AppLogger) {
+    logger.setMethod(response.req.method)
+    logger.setRoute(response.req.path)
     logger.getLogger().info(JSON.stringify(this.data))
       if (this.data) 
         response.status(this.code).json(this.data)

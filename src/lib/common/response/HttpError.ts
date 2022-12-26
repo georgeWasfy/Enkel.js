@@ -12,6 +12,8 @@ export class HttpError {
     this.data = data;
   }
   private Error(response: express.Response, logger: AppLogger) {
+    logger.setMethod(response.req.method)
+    logger.setRoute(response.req.path)
     logger.error(this.message)
     if (this.data) response.status(this.code).json(this.data);
     else response.status(this.code);
