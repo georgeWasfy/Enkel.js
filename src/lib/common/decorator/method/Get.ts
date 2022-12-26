@@ -1,6 +1,6 @@
 import { getRoutes } from "../../http/BaseRoute";
 import { HttpRoute, MiddlewareFunction } from "../../http/HttpRoute";
-import { HttpMethod } from "../../http/Methods";
+import { HttpMethod } from "../../http/HttpMethodEnum";
 
 
 export function Get(route?: string, middlewares?: [MiddlewareFunction]): MethodDecorator {

@@ -1,4 +1,5 @@
-import { Controller, Get, Result } from "../src"
+import { Controller, Get, HttpError, Result } from "../src"
+import { BadRequest } from "../src/lib/common/response/HttpError"
 
 
 
@@ -7,9 +8,9 @@ export class HelloController {
 
     @Get("/test")
     private async test() {
-        console.log('cony')
-        return new Result("content", {
-            message: "Hello world!!"
-        })
+        // return new Result(200, {
+        //     message: "Hello world!!"
+        // })
+        return new BadRequest('This is a bad request', {})
     }
 }

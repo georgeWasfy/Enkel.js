@@ -5,9 +5,11 @@ export * from './lib/baseServer/HttpServer';
 export * from './lib/baseServer/AbstractServer';
 export * from './lib/logger/Logger';
 
-export {Error, Result, IResponse} from './lib/common/Response'
+export {Result} from './lib/common/response/Response'
+export {HttpError} from './lib/common/response/HttpError'
 
-export { HttpMethod } from './lib/common/http/Methods'
+
+export { HttpMethod } from './lib/common/http/HttpMethodEnum'
 
 export { BaseRoute, buildUrl } from './lib/common/http/BaseRoute'
 

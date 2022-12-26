@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { HttpMethod } from "./Methods";
+import { HttpMethod } from "./HttpMethodEnum";
 
 export interface BaseRoute {
   id: string;

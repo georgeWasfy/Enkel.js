@@ -1,27 +1,59 @@
-import { format, transports, createLogger,Logger } from "winston";
+import { format, transports, createLogger, Logger } from "winston";
 
 const { combine, timestamp, label, prettyPrint } = format;
-export  class AppLogger {
+export class AppLogger {
+  private logger: Logger;
+  private route: string;
+  private logDataObj: any;
 
-    private logger: Logger;
+  constructor() {
+    const logger = createLogger({
+      transports: [
+        new transports.Console(),
+        new transports.File({
+          filename: `./logs/server.log`,
+        }),
+      ],
+      format: format.printf((info) => {
+        let message = `${this.dateFormat()} | ${info.level.toUpperCase()} | ${
+          this.route
+        }.log | ${info.message} | `;
+        message = info.obj
+          ? message + `data:${JSON.stringify(info.obj)} | `
+          : message;
+        message = this.logDataObj
+          ? message + `log_data:${JSON.stringify(this.logDataObj)} | `
+          : message;
+        return message;
+      }),
+    });
+    process.on("uncaughtException", (error: any) => {
+      this.getLogger().error(error);
+    });
+    this.logger = logger;
+  }
+  dateFormat = () => {
+    return new Date(Date.now()).toUTCString();
+  };
+  setLogData(logDataObj: any) {
+    this.logDataObj = logDataObj;
+  }
+  info(message: string, obj?: any) {
+    if (obj) this.logger.log("info", message, { obj });
+    else this.logger.log("info", message);
+  }
 
-    constructor() {
-        this.logger = createLogger({
-            format: combine(
-              label({ label: 'right meow!' }),
-              timestamp(),
-              prettyPrint()
-            ),
-            transports: [new transports.Console()]
-          })
+  debug(message: string, obj?: any) {
+    if (obj) this.logger.log("debug", message, { obj });
+    else this.logger.log("debug", message);
+  }
 
-        process.on('uncaughtException', (error: any) => {
-            this.getLogger().error(error);
-        });
-    }
+  error(message: string, obj?: any) {
+    if (obj) this.logger.log("error", message, { obj });
+    else this.logger.log("error", message);
+  }
 
-    getLogger(): Logger {
-        return this.logger;
-    }
-
+  getLogger(): Logger {
+    return this.logger;
+  }
 }

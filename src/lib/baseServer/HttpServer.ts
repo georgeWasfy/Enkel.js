@@ -39,12 +39,12 @@ export abstract class HttpServer extends AbstractServer {
                 return reject(new Error("Failed to create http server."));
 
             this.httpServer.on('error', (error: any) => {
-                this.logger.getLogger().error(error);
+                this.logger.error('Error on starting HttpServer',error);
                 reject(error);
             });
 
             this.httpServer.on('listening', () => {
-                this.logger.getLogger().info('Listening on port %s', this.port);
+                this.logger.info(`Listening on port ${this.port}`);
                 resolve(this.httpServer);
             });
 
