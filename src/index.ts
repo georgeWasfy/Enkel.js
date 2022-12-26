@@ -2,7 +2,6 @@
 import "reflect-metadata";
 
 export * from './lib/baseServer/HttpServer'; 
-export * from './lib/baseServer/AbstractServer';
 export * from './lib/logger/Logger';
 
 export {Result} from './lib/common/response/Response'

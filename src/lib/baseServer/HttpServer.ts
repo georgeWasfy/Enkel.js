@@ -1,17 +1,14 @@
 import http from "http";
 import express from "express";
 import { AppLogger } from "../logger/Logger";
-import { AbstractServer } from "./AbstractServer";
 
-export abstract class HttpServer extends AbstractServer {
+export abstract class HttpServer {
 
     private readonly httpServer: http.Server;
     private port: Number;
     public logger: AppLogger
 
     constructor(express: express.Express, logger: AppLogger) {
-        super();
-
         if (express) {
             this.logger = logger
             this.httpServer = http.createServer(express);
