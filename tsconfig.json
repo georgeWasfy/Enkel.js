@@ -1,5 +1,4 @@
 {
-    "version": "2.1.1",
     "compilerOptions": {
       "lib": [
         "es5",
@@ -20,7 +19,8 @@
       "pretty": true,
       "strictNullChecks": true,
       "noUnusedLocals": false,
-      "downlevelIteration": true
+      "downlevelIteration": true,
+      "esModuleInterop":true
     },
     "exclude": [
       "tmp",

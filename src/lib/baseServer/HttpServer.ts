@@ -1,16 +1,19 @@
-import * as http from "http";
-import * as express from "express";
-import { Server } from "../../index";
+import http from "http";
+import express from "express";
+import { AppLogger } from "../logger/Logger";
+import { AbstractServer } from "./AbstractServer";
 
-export abstract class HttpServer extends Server {
+export abstract class HttpServer extends AbstractServer {
 
     private readonly httpServer: http.Server;
     private port: Number;
+    public logger: AppLogger
 
-    constructor(express: express.Express) {
+    constructor(express: express.Express, logger: AppLogger) {
         super();
 
         if (express) {
+            this.logger = logger
             this.httpServer = http.createServer(express);
         } else {
             this.httpServer = http.createServer();
@@ -36,12 +39,12 @@ export abstract class HttpServer extends Server {
                 return reject(new Error("Failed to create http server."));
 
             this.httpServer.on('error', (error: any) => {
-                this.getLogger().error(error);
+                this.logger.getLogger().error(error);
                 reject(error);
             });
 
             this.httpServer.on('listening', () => {
-                this.getLogger().info('Listening on port %s', this.port);
+                this.logger.getLogger().info('Listening on port %s', this.port);
                 resolve(this.httpServer);
             });
 
