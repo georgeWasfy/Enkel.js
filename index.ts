@@ -1,4 +1,4 @@
-import './controllers/HelloController'
+// import './components/entity/entity.controller'
 import { ExpressRestServer } from './src';
 
 const server = new ExpressRestServer();

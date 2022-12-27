@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import { AppLogger } from "../logger/Logger";
+import { AppLogger } from "../logger/logger";
 
 export abstract class HttpServer {
 

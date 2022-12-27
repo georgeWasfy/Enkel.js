@@ -1,5 +1,5 @@
-import { ExpressRestServer } from "../../../restServer/ExpressRestServer";
-import { HttpRoute } from "../../http/HttpRoute";
+import { ExpressRestServer } from "../../../restServer/express-rest-server";
+import { HttpRoute } from "../../http/http-route";
 
 
 export function Controller(baseUrl?: string): ClassDecorator {

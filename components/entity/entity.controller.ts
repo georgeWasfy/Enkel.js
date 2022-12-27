@@ -1,5 +1,5 @@
-import { Controller, Get, HttpError, Result } from "../src";
-import { BadRequest } from "../src/lib/common/response/http-error";
+import { Controller, Get } from "../../src";
+import { BadRequest } from "../../src/lib/common/response/http-error";
 
 @Controller("api")
 export class HelloController {

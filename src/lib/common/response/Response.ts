@@ -1,5 +1,5 @@
 import express from "express";
-import { AppLogger } from "../../logger/Logger";
+import { AppLogger } from "../../logger/logger";
 
 export class Result {
   private code: number;

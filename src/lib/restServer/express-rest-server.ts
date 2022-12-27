@@ -9,12 +9,12 @@ import session from "express-session";
 import cors from "cors";
 import "reflect-metadata";
 
-import { AppLogger } from "../logger/Logger";
+import { AppLogger } from "../logger/logger";
 import { HttpServer } from "../baseServer/HttpServer";
-import { HttpMethod } from "../common/http/HttpMethodEnum";
-import { Result } from "../common/response/Response";
-import { HttpError } from "../common/response/HttpError";
-import { HttpRoute } from "../common/http/HttpRoute";
+import { HttpMethod } from "../common/http/http-method-enum";
+import { Result } from "../common/response/response";
+import { HttpError } from "../common/response/http-error";
+import { HttpRoute } from "../common/http/http-route";
 
 const DEFAULT_SESSION_SECRET = "220183";
 

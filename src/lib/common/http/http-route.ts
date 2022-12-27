@@ -1,5 +1,5 @@
 import express from "express";
-import { HttpMethod } from "./HttpMethodEnum";
+import { HttpMethod } from "./http-method-enum";
 
 export type MiddlewareFunction = express.RequestHandler;
 export interface BaseRoute {
