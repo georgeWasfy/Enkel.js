@@ -48,4 +48,6 @@ export abstract class HttpServer {
             this.httpServer.listen(this.port);
         });
     }
+
+    abstract bootstrap(fun: Function): any;
 }

@@ -134,6 +134,7 @@ export class ExpressRestServer extends HttpServer {
       _.keys(routes)
         .map((key) => routes[key])
         .forEach((route) => {
+          // route is object from class HttpRoute
           let url = HttpRoute.buildUrl(target, route.name, route.url, this.root);
           this.logger.info(HttpMethod[route.method] + " - " + url);
 
@@ -171,5 +172,11 @@ export class ExpressRestServer extends HttpServer {
         throw new Error("Invalid return type.");
       }
     };
+  }
+
+  public bootstrap(fun: Function) {
+    if (fun && (typeof fun == "function")) {
+      fun();   
+   }
   }
 }
