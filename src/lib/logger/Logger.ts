@@ -1,11 +1,13 @@
+import chalk from "chalk";
 import { format, transports, createLogger, Logger } from "winston";
 
 export class AppLogger {
   private logger: Logger;
-  private route= '';
-  private method= '';
+  private route = "";
+  private method = "";
   private Format: any;
   private transportArray: any[];
+
   constructor() {
     this.Format = format.combine(
       format.colorize(),
@@ -32,24 +34,27 @@ export class AppLogger {
   }
 
   setRoute(route: string) {
-      this.route = route
+    this.route = route;
   }
   setMethod(method: string) {
-    this.method = method
-}
+    this.method = method;
+  }
   info(message: string, obj?: any) {
-    if (obj) this.logger.log("info", message, { obj });
-    else this.logger.log("info", message);
+    if (obj)
+      this.logger.log("info", chalk.cyanBright.bold(message), {
+        obj,
+      });
+    else this.logger.log("info", chalk.cyanBright.bold(message));
   }
 
-  debug(message: string, obj?: any) {
-    if (obj) this.logger.log("debug", message, { obj });
-    else this.logger.log("debug", message);
+  warn(message: string, obj?: any) {
+    if (obj) this.logger.log("warn", chalk.yellowBright.bold(message), { obj });
+    else this.logger.log("warn", chalk.yellowBright.bold(message));
   }
 
   error(message: string, obj?: any) {
-    if (obj) this.logger.log("error", message, { obj });
-    else this.logger.log("error", message);
+    if (obj) this.logger.log("error", chalk.redBright.bold(message), { obj });
+    else this.logger.log("error", chalk.redBright.bold(message));
   }
 
   getLogger(): Logger {
@@ -61,9 +66,9 @@ export class AppLogger {
     const { timestamp, level, message, ...args } = info;
     const ts = timestamp.slice(0, 19).replace("T", " ");
 
-    return `[${this.method} ${this.route}] ${ts} ${level}:${this.route} ${message} ${
-      Object.keys(args).length ? JSON.stringify(args) : ""
-    }`;
+    return `[${this.method} ${this.route}] ${ts} ${level}:${
+      this.route
+    } ${message} ${Object.keys(args).length ? JSON.stringify(args) : ""}`;
   };
 
   dateFormat = () => {

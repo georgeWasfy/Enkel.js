@@ -128,7 +128,7 @@ export class ExpressRestServer extends HttpServer {
       this.controllers.push(instance);
 
       this.resolveTarget(instance, target);
-      this.logger.info("Initalizing Not A Framework :D");
+      this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
 
       _.keys(routes)
