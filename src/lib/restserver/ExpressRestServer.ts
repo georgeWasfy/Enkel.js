@@ -11,10 +11,10 @@ import "reflect-metadata";
 
 import { AppLogger } from "../logger/Logger";
 import { HttpServer } from "../baseServer/HttpServer";
-import { buildUrl } from "../common/http/BaseRoute";
 import { HttpMethod } from "../common/http/HttpMethodEnum";
 import { Result } from "../common/response/Response";
 import { HttpError } from "../common/response/HttpError";
+import { HttpRoute } from "../common/http/HttpRoute";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -78,7 +78,7 @@ export class ExpressRestServer extends HttpServer {
     return this.controllers;
   }
 
-  public getApplication(): express.Express {
+  public getExpressInstance(): express.Express {
     return this.express;
   }
 
@@ -134,7 +134,7 @@ export class ExpressRestServer extends HttpServer {
       _.keys(routes)
         .map((key) => routes[key])
         .forEach((route) => {
-          let url = buildUrl(target, route.name, route.url, this.root);
+          let url = HttpRoute.buildUrl(target, route.name, route.url, this.root);
           this.logger.info(HttpMethod[route.method] + " - " + url);
 
           // if (route.middlewares)

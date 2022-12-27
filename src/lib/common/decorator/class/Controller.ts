@@ -1,11 +1,11 @@
 import { ExpressRestServer } from "../../../restServer/ExpressRestServer";
-import { setBaseUrl } from "../../http/BaseRoute";
+import { HttpRoute } from "../../http/HttpRoute";
 
 
 export function Controller(baseUrl?: string): ClassDecorator {
     return (target: Function) => {
         if (baseUrl) {
-            setBaseUrl(target.prototype, baseUrl);
+            HttpRoute.setBaseUrl(target.prototype, baseUrl);
         }
 
         ExpressRestServer.prototypeControllers.push(target);

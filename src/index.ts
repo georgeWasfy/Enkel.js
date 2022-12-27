@@ -10,8 +10,6 @@ export {HttpError} from './lib/common/response/HttpError'
 
 export { HttpMethod } from './lib/common/http/HttpMethodEnum'
 
-export { BaseRoute, buildUrl } from './lib/common/http/BaseRoute'
-
 export { Controller } from './lib/common/decorator/class/Controller'
 export { Get } from './lib/common/decorator/method/Get'
 
