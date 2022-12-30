@@ -1,8 +1,10 @@
-import { PATH_METADATA } from "../../../CONSTANTS";
+import { HTTP_METHOD_METADATA, PATH_METADATA } from "../../../CONSTANTS";
+import { HttpMethodEnum } from "../../http/http-method-enum";
 
 export function Get(path: string): MethodDecorator {
     return (target: Function, key: string, descriptor: TypedPropertyDescriptor<any>) => {
 
         Reflect.defineMetadata(PATH_METADATA, path, target, key);
+        Reflect.defineMetadata(HTTP_METHOD_METADATA, HttpMethodEnum.get, target, key);
     };
 }

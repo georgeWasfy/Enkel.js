@@ -8,7 +8,7 @@ export {Result} from './lib/common/response/http-success'
 export {HttpError} from './lib/common/response/http-error'
 
 
-export { HttpMethod } from './lib/common/http/http-method-enum'
+export { HttpMethodEnum } from './lib/common/http/http-method-enum'
 
 export { Controller } from './lib/common/decorator/class/controller'
 export { Get } from './lib/common/decorator/method/get'

@@ -1,12 +1,12 @@
 import express from "express";
-import { HttpMethod } from "./http-method-enum";
+import { HttpMethodEnum } from "./http-method-enum";
 
 export type MiddlewareFunction = express.RequestHandler;
 export interface BaseRoute {
   id: string;
   name: string;
   url: string;
-  method: HttpMethod;
+  method: HttpMethodEnum;
   callback: Function;
 }
 export class HttpRoute {
@@ -14,27 +14,16 @@ export class HttpRoute {
     public id: any,
     public name: string,
     public url: any,
-    public method: HttpMethod,
+    public method: HttpMethodEnum,
     public callback: Function,
     public middlewares?: MiddlewareFunction [] ,
     public responseHeaders?: object [] 
 
   ) {}
 
-  public static getRoutes(target: Object): {} {
-    if (!Reflect.hasOwnMetadata("custom:routes", target)) {
-      Reflect.defineMetadata("custom:routes", {}, target);
-    }
-
-    return Reflect.getOwnMetadata("custom:routes", target);
-  }
 
   public static getBaseUrl(target: Object): string {
     return Reflect.getOwnMetadata("custom:baseUrl", target);
-  }
-
-  public static setBaseUrl(target: Object, baseUrl: string) {
-    Reflect.defineMetadata("custom:baseUrl", baseUrl, target);
   }
 
   public static buildUrl(

@@ -11,7 +11,7 @@ import "reflect-metadata";
 
 import { AppLogger } from "../logger/logger";
 import { HttpServer } from "../baseServer/HttpServer";
-import { HttpMethod } from "../common/http/http-method-enum";
+import { HttpMethodEnum } from "../common/http/http-method-enum";
 import { Result } from "../common/response/http-success";
 import { HttpError } from "../common/response/http-error";
 import { HttpRoute } from "../common/http/http-route";
@@ -83,7 +83,7 @@ export class ExpressRestServer extends HttpServer {
   public getControllers() {
     return this.controllers;
   }
-
+// 1:18 singlton approuter
   public static setGlobalControllers(controllers: HttpController[]) {
     this.globalControllers = controllers;
   }
@@ -112,8 +112,8 @@ export class ExpressRestServer extends HttpServer {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
       for (const route of controller.routeHandlers) {
-        this.logger.info(HttpMethod[route.method] + " - " + route.url);
-        this.router.get(`/${controller.urlPrefix}${route.url}`,this.createRoute(route))
+        this.logger.info(route.method + " - " + route.url);
+        this.router[route.method](`/${controller.urlPrefix}${route.url}`,this.createRoute(route))
       }
     }
     this.express.use(this.router);
