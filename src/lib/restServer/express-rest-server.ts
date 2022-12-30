@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response, Response } from "express";
 import * as _ from "lodash";
 
 import compression from "compression";
@@ -67,11 +67,16 @@ export class ExpressRestServer extends HttpServer {
     if (options && options.useCors) this.express.use(cors());
   }
 
-  private static successResponse(result: any) {
+  private static isSuccessResponse(result: any) {
     return result instanceof Result ? true : false;
   }
-  private static errorResponse(result: any) {
+  private static isErrorResponse(result: any) {
     return result instanceof HttpError ? true : false;
+  }
+
+  private static isexpressResponse(result: any): result is Response {
+
+    return result.statusCode || result.statusMessage;
   }
 
   public getControllers() {
@@ -154,7 +159,9 @@ export class ExpressRestServer extends HttpServer {
   private createRoute(route: any, instance: any, parameters: any) {
     return async (req: express.Request, res: express.Response) => {
       const values: any[] = [];
-      let result = route.callback.apply(instance, values);
+      // let result = route.callback.apply(instance, values);
+      let result = route.callback(req, res);
+
       if (result && typeof result.then === "function") {
         try {
           result = await result;
@@ -164,11 +171,15 @@ export class ExpressRestServer extends HttpServer {
         }
       }
 
-      if (result && ExpressRestServer.successResponse(result) ) {
+      if (result && ExpressRestServer.isSuccessResponse(result) ) {
         return result.Success(res, this.logger);
-      } else if (result && ExpressRestServer.errorResponse(result) ) {
+      } else if (result && ExpressRestServer.isErrorResponse(result) ) {
         return result.Error(res, this.logger)
-      }else {
+      } else if (result && ExpressRestServer.isexpressResponse(result)){
+        // needs logging
+        return res
+      }
+      else {
         throw new Error("Invalid return type.");
       }
     };
