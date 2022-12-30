@@ -12,7 +12,7 @@ import "reflect-metadata";
 import { AppLogger } from "../logger/logger";
 import { HttpServer } from "../baseServer/HttpServer";
 import { HttpMethod } from "../common/http/http-method-enum";
-import { Result } from "../common/response/response";
+import { Result } from "../common/response/http-success";
 import { HttpError } from "../common/response/http-error";
 import { HttpRoute } from "../common/http/http-route";
 
@@ -45,7 +45,7 @@ export class ExpressRestServer extends HttpServer {
     this.logger = applicationLogger;
     this.express = application;
     this.router = express.Router();
-    /* default routes */
+    
     this.express.use(bodyParser.urlencoded({ extended: true }));
     this.express.use(bodyParser.json());
     this.express.use(cookieParser());

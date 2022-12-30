@@ -16,7 +16,9 @@ export class HttpRoute {
     public url: any,
     public method: HttpMethod,
     public callback: Function,
-    public middlewares?: [MiddlewareFunction]
+    public middlewares?: [MiddlewareFunction],
+    public responseHeaders?: object [] 
+
   ) {}
 
   public static getRoutes(target: Object): {} {
