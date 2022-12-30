@@ -1,11 +1,8 @@
-import { HttpRoute, MiddlewareFunction } from "../../http/http-route";
-import { HttpMethod } from "../../http/http-method-enum";
+import { PATH_METADATA } from "../../../CONSTANTS";
 
-
-export function Get(route?: string, middlewares?: [MiddlewareFunction]): MethodDecorator {
+export function Get(path: string): MethodDecorator {
     return (target: Function, key: string, descriptor: TypedPropertyDescriptor<any>) => {
 
-        let routes = HttpRoute.getRoutes(target) as any;
-        routes[key] = new HttpRoute(null, key, route, HttpMethod.get, descriptor.value, middlewares);
+        Reflect.defineMetadata(PATH_METADATA, path, target, key);
     };
 }

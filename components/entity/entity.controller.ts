@@ -7,7 +7,7 @@ export class HelloController {
   @Get("/test")
   @Header('Cache-Control', 'none')
   private async test(req: Request, res: Response) {
-    return res.json({"fgfgf": "ggff"})
+    // return res.json({"fgfgf": "ggff"})
     return new Result(200, {
       message: "Hello world!!",
     });

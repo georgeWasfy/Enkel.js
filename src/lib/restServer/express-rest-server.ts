@@ -15,6 +15,7 @@ import { HttpMethod } from "../common/http/http-method-enum";
 import { Result } from "../common/response/http-success";
 import { HttpError } from "../common/response/http-error";
 import { HttpRoute } from "../common/http/http-route";
+import { HttpController } from "../common/http/http-controller";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -29,11 +30,12 @@ export class ExpressRestServer extends HttpServer {
 
   private express: express.Express;
 
-  private router: any;
+  private router: express.Router;
 
   public logger;
 
   private root: string | undefined;
+  static globalControllers: HttpController[];
 
   constructor(options?: Options) {
     let application = express();
@@ -45,7 +47,7 @@ export class ExpressRestServer extends HttpServer {
     this.logger = applicationLogger;
     this.express = application;
     this.router = express.Router();
-    
+
     this.express.use(bodyParser.urlencoded({ extended: true }));
     this.express.use(bodyParser.json());
     this.express.use(cookieParser());
@@ -75,12 +77,15 @@ export class ExpressRestServer extends HttpServer {
   }
 
   private static isexpressResponse(result: any): result is Response {
-
     return result.statusCode || result.statusMessage;
   }
 
   public getControllers() {
     return this.controllers;
+  }
+
+  public static setGlobalControllers(controllers: HttpController[]) {
+    this.globalControllers = controllers;
   }
 
   public getExpressInstance(): express.Express {
@@ -101,62 +106,20 @@ export class ExpressRestServer extends HttpServer {
     return await super.start();
   }
 
-  private resolveTarget(instance: any, target: any) {
-    for (let key in target) {
-      if (target.hasOwnProperty(key)) {
-        if (Reflect.hasMetadata("custom:inject", target, key)) {
-          let propertyConstructor = Reflect.getMetadata(
-            "design:type",
-            target,
-            key
-          );
-          if (
-            Reflect.hasMetadata("custom:service", propertyConstructor.prototype)
-          ) {
-            instance[key] = new propertyConstructor();
-            this.resolveTarget(instance[key], propertyConstructor.prototype);
-          }
-        }
-      }
-    }
-  }
 
   private async initialize() {
-    let controllers = ExpressRestServer.prototypeControllers;
-    for (const controller of controllers) {
-      let target = controller.prototype;
-      let routes = Reflect.getOwnMetadata("custom:routes", target);
-      let parameters = Reflect.getOwnMetadata("custom:parameters", target);
-
-      let instance = new controller();
-
-      this.controllers.push(instance);
-
-      this.resolveTarget(instance, target);
+    for (const controller of ExpressRestServer.globalControllers) {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
-
-      _.keys(routes)
-        .map((key) => routes[key])
-        .forEach((route) => {
-          // route is object from class HttpRoute
-          let url = HttpRoute.buildUrl(target, route.name, route.url, this.root);
-          this.logger.info(HttpMethod[route.method] + " - " + url);
-
-          // if (route.middlewares)
-          //     router[HttpMethod[route.method]](url, route.middlewares, this.createRoute(route, instance, parameters));
-          // else
-          this.router[HttpMethod[route.method]](
-            url,
-            this.createRoute(route, instance, parameters)
-          );
-        });
+      for (const route of controller.routeHandlers) {
+        this.logger.info(HttpMethod[route.method] + " - " + route.url);
+        this.router.get(`/${controller.urlPrefix}${route.url}`,this.createRoute(route))
+      }
     }
-
     this.express.use(this.router);
   }
 
-  private createRoute(route: any, instance: any, parameters: any) {
+  private createRoute(route: any) {
     return async (req: express.Request, res: express.Response) => {
       const values: any[] = [];
       // let result = route.callback.apply(instance, values);
@@ -171,23 +134,22 @@ export class ExpressRestServer extends HttpServer {
         }
       }
 
-      if (result && ExpressRestServer.isSuccessResponse(result) ) {
+      if (result && ExpressRestServer.isSuccessResponse(result)) {
         return result.Success(res, this.logger);
-      } else if (result && ExpressRestServer.isErrorResponse(result) ) {
-        return result.Error(res, this.logger)
-      } else if (result && ExpressRestServer.isexpressResponse(result)){
+      } else if (result && ExpressRestServer.isErrorResponse(result)) {
+        return result.Error(res, this.logger);
+      } else if (result && ExpressRestServer.isexpressResponse(result)) {
         // needs logging
-        return res
-      }
-      else {
+        return res;
+      } else {
         throw new Error("Invalid return type.");
       }
     };
   }
 
   public bootstrap(fun: Function) {
-    if (fun && (typeof fun == "function")) {
-      fun();   
-   }
+    if (fun && typeof fun == "function") {
+      fun();
+    }
   }
 }
