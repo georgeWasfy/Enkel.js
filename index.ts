@@ -1,4 +1,6 @@
 import './components/entity/entity.controller'
+// import './components/entity/newentity.controller'
+
 import { ExpressRestServer } from './src';
 
 const server = new ExpressRestServer();

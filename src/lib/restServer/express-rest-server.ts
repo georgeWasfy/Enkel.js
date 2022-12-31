@@ -16,6 +16,13 @@ import { Result } from "../common/response/http-success";
 import { HttpError } from "../common/response/http-error";
 import { HttpRoute } from "../common/http/http-route";
 import { HttpController } from "../common/http/http-controller";
+import { Container } from "inversify";
+import { HelloService } from "../../../components/entity/entity.service";
+import {
+  getControllerMetadata,
+  getControllersFromContainer,
+  getControllersFromMetadata,
+} from "../utils";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -24,17 +31,14 @@ class Options {
 }
 
 export class ExpressRestServer extends HttpServer {
-  public static readonly prototypeControllers: any[] = [];
-
-  private readonly controllers: any[];
-
   private express: express.Express;
+
+  private container = new Container();
 
   private router: express.Router;
 
   public logger;
 
-  private root: string | undefined;
   static globalControllers: HttpController[];
 
   constructor(options?: Options) {
@@ -42,8 +46,7 @@ export class ExpressRestServer extends HttpServer {
     let applicationLogger = new AppLogger();
     super(application, applicationLogger);
 
-    this.root = undefined;
-    this.controllers = [];
+    this.container.bind<HelloService>('HelloService').to(HelloService);
     this.logger = applicationLogger;
     this.express = application;
     this.router = express.Router();
@@ -80,10 +83,7 @@ export class ExpressRestServer extends HttpServer {
     return result.statusCode || result.statusMessage;
   }
 
-  public getControllers() {
-    return this.controllers;
-  }
-// 1:18 singlton approuter
+  // 1:18 singlton approuter
   public static setGlobalControllers(controllers: HttpController[]) {
     this.globalControllers = controllers;
   }
@@ -92,38 +92,55 @@ export class ExpressRestServer extends HttpServer {
     return this.express;
   }
 
-  public getRoot(): string | undefined {
-    return this.root;
-  }
-
-  public setRoot(value: string) {
-    this.root = value;
-    return this;
-  }
-
   public async start(): Promise<any> {
+    this.registerInjectable();
     await this.initialize();
     return await super.start();
   }
 
+  private registerInjectable() {
+    const constructors = getControllersFromMetadata();
+    constructors.forEach((constructor) => {
+      const { name } = constructor as { name: string };
 
+      if (this.container.isBoundNamed("Controller", name)) {
+        throw new Error(`Controller with name ${name} is already defined`);
+      }
+      this.container
+        .bind("Controller")
+        .to(constructor as new (...args: Array<never>) => unknown)
+        .whenTargetNamed(name);
+    });
+    const controllers = getControllersFromContainer(this.container, true);
+    // controllers.forEach((controller: any) => {
+    //   const controllerMetadata = getControllerMetadata(controller.constructor);
+    //   console.log(
+    //     "🚀 ~ file: express-rest-server.ts:119 ~ ExpressRestServer ~ controllers.forEach ~ controllerMetadata",
+    //     controllerMetadata
+    //   );
+    // });
+  }
   private async initialize() {
     for (const controller of ExpressRestServer.globalControllers) {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
       for (const route of controller.routeHandlers) {
         this.logger.info(route.method + " - " + route.url);
-        this.router[route.method](`/${controller.urlPrefix}${route.url}`,this.createRoute(route))
+        this.router[route.method](
+          `/${controller.urlPrefix}${route.url}`,
+          this.createRoute(route, controller)
+        );
       }
     }
     this.express.use(this.router);
   }
 
-  private createRoute(route: any) {
+  private createRoute(route: any, controller: any) {
+
     return async (req: express.Request, res: express.Response) => {
       const values: any[] = [];
       // let result = route.callback.apply(instance, values);
-      let result = route.callback(req, res);
+     let result = route.callback(req, res);
 
       if (result && typeof result.then === "function") {
         try {

@@ -3,7 +3,9 @@ import { HttpRoute } from "./http-route";
 export class HttpController {
     constructor(
       public urlPrefix: string,
-      public routeHandlers: HttpRoute[]
+      public name: string,
+      public routeHandlers: HttpRoute[],
+      public services?: any[]
     ) {}
     get routes() {
         return this.routeHandlers;
