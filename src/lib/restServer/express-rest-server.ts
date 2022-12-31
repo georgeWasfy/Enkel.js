@@ -139,8 +139,23 @@ export class ExpressRestServer extends HttpServer {
 
     return async (req: express.Request, res: express.Response) => {
       const values: any[] = [];
-      // let result = route.callback.apply(instance, values);
-     let result = route.callback(req, res);
+      const controllers = getControllersFromContainer(this.container, true);
+      // controllers.forEach(controller => {
+      //   const controllerMetadata = getControllerMetadata(controller.constructor);
+        
+      // });
+      // problem was in the this scope of controller so it doent see this.service.test()
+      // so what needs to be done is dynamically get the class and the handler and invoke the class handler
+      // aka restructure and ditch callbacks defined on httproute class
+      const controllerMetadata = getControllerMetadata(controllers[0].constructor);
+
+      const value = await this.container.getNamed<any>(
+        'Controller',
+        controllerMetadata.target.name)
+      console.log("🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value", value.test)
+
+      // let result = route.callback(req, res);
+      let result = value.test(req,res)
 
       if (result && typeof result.then === "function") {
         try {
