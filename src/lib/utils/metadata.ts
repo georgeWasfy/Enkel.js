@@ -1,5 +1,5 @@
 import { DecoratorTarget } from "inversify/lib/annotation/decorator_utils";
-import { CONTROLLER_METADATA } from "../CONSTANTS";
+import { CONTROLLER_METADATA } from "../constants";
 
 export function getControllersFromContainer(
     container: any,
@@ -19,7 +19,7 @@ export function getControllersFromMetadata(): Array<DecoratorTarget> {
       Reflect.getMetadata(
         CONTROLLER_METADATA,
         Reflect,
-      ) as Array<any> || [];
+    ) as Array<any> || [];
     return arrayOfControllerMetadata.map(metadata => metadata.target);
   }
   

@@ -10,8 +10,8 @@ export {HttpError} from './lib/common/response/http-error'
 
 export { HttpMethodEnum } from './lib/common/http/http-method-enum'
 
-export { Controller } from './lib/common/decorator/class/controller'
-export { Get } from './lib/common/decorator/method/get'
+export { Controller } from './lib/common/decorator/class/Controller'
+export { Get } from './lib/common/decorator/method/Get'
 export { Header } from './lib/common/decorator/method/header'
 
 

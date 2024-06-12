@@ -1,5 +1,4 @@
 import { injectable } from "inversify";
-import { Service } from "../../src/lib/common/decorator/class/service";
 
 @injectable()
 export class HelloService {

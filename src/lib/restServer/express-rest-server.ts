@@ -1,9 +1,7 @@
-import express, { response, Response } from "express";
 import * as _ from "lodash";
 
 import compression from "compression";
 import helmet from "helmet";
-import * as bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import cors from "cors";
@@ -17,12 +15,14 @@ import { HttpError } from "../common/response/http-error";
 import { HttpRoute } from "../common/http/http-route";
 import { HttpController } from "../common/http/http-controller";
 import { Container } from "inversify";
-import { HelloService } from "../../../components/entity/entity.service";
 import {
   getControllerMetadata,
   getControllersFromContainer,
   getControllersFromMetadata,
 } from "../utils";
+import { HelloService } from "../../../example/components/entity/entity.service";
+import express, { Response } from "express";
+import bodyParser from "body-parser";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -46,7 +46,7 @@ export class ExpressRestServer extends HttpServer {
     let applicationLogger = new AppLogger();
     super(application, applicationLogger);
 
-    this.container.bind<HelloService>('HelloService').to(HelloService);
+    this.container.bind<HelloService>("HelloService").to(HelloService);
     this.logger = applicationLogger;
     this.express = application;
     this.router = express.Router();
@@ -111,6 +111,7 @@ export class ExpressRestServer extends HttpServer {
         .to(constructor as new (...args: Array<never>) => unknown)
         .whenTargetNamed(name);
     });
+
     const controllers = getControllersFromContainer(this.container, true);
     // controllers.forEach((controller: any) => {
     //   const controllerMetadata = getControllerMetadata(controller.constructor);
@@ -136,26 +137,31 @@ export class ExpressRestServer extends HttpServer {
   }
 
   private createRoute(route: any, controller: any) {
-
     return async (req: express.Request, res: express.Response) => {
       const values: any[] = [];
       const controllers = getControllersFromContainer(this.container, true);
       // controllers.forEach(controller => {
       //   const controllerMetadata = getControllerMetadata(controller.constructor);
-        
+
       // });
       // problem was in the this scope of controller so it doent see this.service.test()
       // so what needs to be done is dynamically get the class and the handler and invoke the class handler
       // aka restructure and ditch callbacks defined on httproute class
-      const controllerMetadata = getControllerMetadata(controllers[0].constructor);
+      const controllerMetadata = getControllerMetadata(
+        controllers[0].constructor
+      );
 
       const value = await this.container.getNamed<any>(
-        'Controller',
-        controllerMetadata.target.name)
-      console.log("🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value", value.test)
+        "Controller",
+        controllerMetadata.target.name
+      );
+      console.log(
+        "🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value",
+        value.test
+      );
 
       // let result = route.callback(req, res);
-      let result = value.test(req,res)
+      let result = value.test(req, res);
 
       if (result && typeof result.then === "function") {
         try {

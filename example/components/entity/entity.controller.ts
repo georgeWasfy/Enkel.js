@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import {  Controller, Get, Header, Result } from "../../src";
-import { BadRequest } from "../../src/lib/common/response/http-error";
+
 import { HelloService } from "./entity.service";
+import { Controller, Get, Header, Result } from "../../../src";
+import { BadRequest } from "../../../src/lib/common/response/http-error";
 
 @Controller("api")
 export class HelloController {
-  // private _helloService = new HelloService()
   constructor(@inject("HelloService") public _helloService: HelloService) {
-    // this._helloService = new HelloService()
   }
 
   @Get("/test")
@@ -18,8 +17,8 @@ export class HelloController {
     const resp =  this._helloService.t()
     console.log("🚀 ~ file: entity.controller.ts:13 ~ HelloController ~ test ~ resp", resp)
     // return res.json({"fgfgf": "ggff"})
-    // return new Result(200, resp);
-    return new BadRequest('This is a bad request', {})
+    return new Result(200, resp);
+    // return new BadRequest('This is a bad request', {})
   }
 
   @Get("/testtt")

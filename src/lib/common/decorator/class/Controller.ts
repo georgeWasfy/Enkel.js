@@ -1,11 +1,12 @@
 import { decorate, injectable } from "inversify";
-import { CONTROLLER_METADATA, HTTP_METHOD_METADATA, PATH_METADATA } from "../../../CONSTANTS";
 import { ExpressRestServer } from "../../../restServer/express-rest-server";
 import { HttpController } from "../../http/http-controller";
 import { HttpMethodEnum } from "../../http/http-method-enum";
 import { HttpRoute } from "../../http/http-route";
+import { CONTROLLER_METADATA, HTTP_METHOD_METADATA, PATH_METADATA } from "../../../constants";
 
 export function Controller(baseUrl: string): ClassDecorator {
+  console.log("🚀 ~ Controller ~ baseUrl:", baseUrl)
   return function (target: Function) {
     const currentMetadata: any = {
       middlewares:[],
@@ -33,6 +34,7 @@ export function Controller(baseUrl: string): ClassDecorator {
       routes.push(httpRoute)
     }
     const controller = new HttpController(baseUrl,target.name, routes)
+    console.log("🚀 ~ controller:", controller)
     ExpressRestServer.setGlobalControllers([controller])
   };
 }

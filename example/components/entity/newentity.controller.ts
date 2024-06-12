@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { Controller, Get, Header } from "../../src"
-import { BadRequest } from "../../src/lib/common/response/http-error"
 import { HelloService } from "./entity.service"
+import { BadRequest } from "../../../src/lib/common/response/http-error"
+import { Controller, Get, Header } from "../../../src"
 
 @Controller("api")
 export class HelloController {
@@ -9,7 +9,7 @@ export class HelloController {
   @Get("/test")
   @Header('Cache-Control', 'none')
   private async test(req: Request, res: Response) {
-    return await this._helloService.test()
+    return await this._helloService.t()
     // return res.json({"fgfgf": "ggff"})
     // return new Result(200, {
     //   message: "Hello world!!",

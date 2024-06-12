@@ -1,5 +1,5 @@
-import './components/entity/entity.controller'
-// import './components/entity/newentity.controller'
+import "reflect-metadata";
+import './example/components/entity/entity.controller'
 
 import { ExpressRestServer } from './src';
 

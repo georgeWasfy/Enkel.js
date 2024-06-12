@@ -1,4 +1,4 @@
-import { HTTP_METHOD_METADATA, PATH_METADATA } from "../../../CONSTANTS";
+import { HTTP_METHOD_METADATA, PATH_METADATA } from "../../../constants";
 import { HttpMethodEnum } from "../../http/http-method-enum";
 
 export function Get(path: string): MethodDecorator {
