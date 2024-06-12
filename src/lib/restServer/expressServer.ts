@@ -17,7 +17,7 @@ import {
   getControllerMetadata,
   getControllersFromContainer,
   getControllersFromMetadata,
-} from "@base/lib/utils";
+} from "@base/utils";
 import { HelloService } from "../../../example/components/entity/entity.service";
 
 const DEFAULT_SESSION_SECRET = "220183";
