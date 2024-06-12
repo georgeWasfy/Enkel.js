@@ -12,7 +12,7 @@ import express, { Response } from "express";
 import bodyParser from "body-parser";
 import { HttpServer } from "@base/lib/baseServer/httpServer";
 import { HttpController } from "@base/lib/common/http/httpController";
-import { HttpError, HttpSucess } from "@base/lib/common/response";
+import { HttpError, HttpSuccess } from "@base/lib/common/response";
 import {
   getControllerMetadata,
   getControllersFromContainer,
@@ -69,7 +69,7 @@ export class ExpressServer extends HttpServer {
   }
 
   private static isSuccessResponse(result: any) {
-    return result instanceof HttpSucess ? true : false;
+    return result instanceof HttpSuccess ? true : false;
   }
   private static isErrorResponse(result: any) {
     return result instanceof HttpError ? true : false;
@@ -79,7 +79,6 @@ export class ExpressServer extends HttpServer {
     return result.statusCode || result.statusMessage;
   }
 
-  // 1:18 singlton approuter
   public static setGlobalControllers(controllers: HttpController[]) {
     this.globalControllers = controllers;
   }
@@ -96,6 +95,7 @@ export class ExpressServer extends HttpServer {
 
   private registerInjectable() {
     const constructors = getControllersFromMetadata();
+    console.log("🚀 ~ ExpressServer ~ registerInjectable ~ constructors:", constructors)
     constructors.forEach((constructor) => {
       const { name } = constructor as { name: string };
 
@@ -151,10 +151,10 @@ export class ExpressServer extends HttpServer {
         "Controller",
         controllerMetadata.target.name
       );
-      console.log(
-        "🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value",
-        value.test
-      );
+      // console.log(
+      //   "🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value",
+      //   value.test
+      // );
 
       // let result = route.callback(req, res);
       let result = value.test(req, res);

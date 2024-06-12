@@ -1,4 +1,4 @@
-import { SERVICE_METADATA } from "@base/lib/constants";
+import { SERVICE_METADATA } from "@base/constants";
 import { injectable } from "inversify";
 
 export function Service(): ClassDecorator {

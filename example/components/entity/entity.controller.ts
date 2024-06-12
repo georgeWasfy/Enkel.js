@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { inject } from "inversify";
 
 import { HelloService } from "./entity.service";
-import { Controller, Get, Header, Result } from "../../../src";
-import { BadRequest } from "../../../src/lib/common/response/httpError";
+import { HttpSuccess } from "@base/lib/common/response";
+import { Controller, Get, Header } from "@base/lib/common/decorator";
+import { BadRequest } from "@base/lib/common/response/httpError";
 
 @Controller("api")
 export class HelloController {
@@ -13,12 +14,8 @@ export class HelloController {
   @Header("Cache-Control", "none")
   private async test(req: Request, res: Response) {
     const resp = this._helloService.t();
-    console.log(
-      "🚀 ~ file: entity.controller.ts:13 ~ HelloController ~ test ~ resp",
-      resp
-    );
     // return res.json({"fgfgf": "ggff"})
-    return new Result(200, resp);
+    return new HttpSuccess(200, resp);
     // return new BadRequest('This is a bad request', {})
   }
 

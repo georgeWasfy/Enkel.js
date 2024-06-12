@@ -1,13 +1,9 @@
 import { decorate, injectable } from "inversify";
 import { ExpressServer } from "@base/lib/restServer";
-import {
-  CONTROLLER_METADATA,
-  PATH_METADATA,
-  HTTP_METHOD_METADATA,
-} from "@base/lib/constants";
 import { HttpMethodEnum } from "@base/lib/common/http/httpMethodEnum";
 import { HttpController } from "@base/lib/common/http/httpController";
 import { HttpRoute } from "@base/lib/common/http/httpRoute";
+import { CONTROLLER_METADATA, HTTP_METHOD_METADATA, PATH_METADATA } from "@base/constants";
 
 export function Controller(baseUrl: string): ClassDecorator {
   return function (target: Function) {
