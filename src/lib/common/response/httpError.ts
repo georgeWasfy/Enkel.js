@@ -1,5 +1,5 @@
+import { AppLogger } from "@base/lib/logger";
 import express from "express";
-import { AppLogger } from "../../logger/logger";
 
 export class HttpError {
   private code: number;

@@ -1,5 +1,3 @@
-import * as _ from "lodash";
-
 import compression from "compression";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -7,22 +5,20 @@ import session from "express-session";
 import cors from "cors";
 import "reflect-metadata";
 
-import { AppLogger } from "../logger/logger";
-import { HttpServer } from "../baseServer/HttpServer";
-import { HttpMethodEnum } from "../common/http/http-method-enum";
-import { Result } from "../common/response/http-success";
-import { HttpError } from "../common/response/http-error";
-import { HttpRoute } from "../common/http/http-route";
-import { HttpController } from "../common/http/http-controller";
+import { AppLogger } from "@base/lib/logger";
 import { Container } from "inversify";
+
+import express, { Response } from "express";
+import bodyParser from "body-parser";
+import { HttpServer } from "@base/lib/baseServer/httpServer";
+import { HttpController } from "@base/lib/common/http/httpController";
+import { HttpError, HttpSucess } from "@base/lib/common/response";
 import {
   getControllerMetadata,
   getControllersFromContainer,
   getControllersFromMetadata,
-} from "../utils";
+} from "@base/lib/utils";
 import { HelloService } from "../../../example/components/entity/entity.service";
-import express, { Response } from "express";
-import bodyParser from "body-parser";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -30,7 +26,7 @@ class Options {
   useCors: boolean;
 }
 
-export class ExpressRestServer extends HttpServer {
+export class ExpressServer extends HttpServer {
   private express: express.Express;
 
   private container = new Container();
@@ -73,7 +69,7 @@ export class ExpressRestServer extends HttpServer {
   }
 
   private static isSuccessResponse(result: any) {
-    return result instanceof Result ? true : false;
+    return result instanceof HttpSucess ? true : false;
   }
   private static isErrorResponse(result: any) {
     return result instanceof HttpError ? true : false;
@@ -122,7 +118,7 @@ export class ExpressRestServer extends HttpServer {
     // });
   }
   private async initialize() {
-    for (const controller of ExpressRestServer.globalControllers) {
+    for (const controller of ExpressServer.globalControllers) {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
       for (const route of controller.routeHandlers) {
@@ -172,11 +168,11 @@ export class ExpressRestServer extends HttpServer {
         }
       }
 
-      if (result && ExpressRestServer.isSuccessResponse(result)) {
+      if (result && ExpressServer.isSuccessResponse(result)) {
         return result.Success(res, this.logger);
-      } else if (result && ExpressRestServer.isErrorResponse(result)) {
+      } else if (result && ExpressServer.isErrorResponse(result)) {
         return result.Error(res, this.logger);
-      } else if (result && ExpressRestServer.isexpressResponse(result)) {
+      } else if (result && ExpressServer.isexpressResponse(result)) {
         // needs logging
         return res;
       } else {

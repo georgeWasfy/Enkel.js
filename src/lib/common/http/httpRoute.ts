@@ -1,5 +1,5 @@
 import express from "express";
-import { HttpMethodEnum } from "./http-method-enum";
+import { HttpMethodEnum } from "./httpMethodEnum";
 
 export type MiddlewareFunction = express.RequestHandler;
 export interface BaseRoute {
@@ -16,11 +16,9 @@ export class HttpRoute {
     public url: any,
     public method: HttpMethodEnum,
     public callback: Function,
-    public middlewares?: MiddlewareFunction [] ,
-    public responseHeaders?: object [] 
-
+    public middlewares?: MiddlewareFunction[],
+    public responseHeaders?: object[]
   ) {}
-
 
   public static getBaseUrl(target: Object): string {
     return Reflect.getOwnMetadata("custom:baseUrl", target);
@@ -32,11 +30,12 @@ export class HttpRoute {
     url: string,
     root?: string
   ): string {
-
     let rootUrl = root ? this.nomalizeUrl(root) : null;
     let baseUrl =
       this.nomalizeUrl(
-        rootUrl ? rootUrl + "/" + this.getBaseUrl(target) : this.getBaseUrl(target)
+        rootUrl
+          ? rootUrl + "/" + this.getBaseUrl(target)
+          : this.getBaseUrl(target)
       ) || "/";
     let returnUrl =
       baseUrl.length === 1 && url

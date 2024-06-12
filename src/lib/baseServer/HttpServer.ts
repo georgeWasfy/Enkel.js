@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import { AppLogger } from "../logger/logger";
+import { AppLogger } from "@base/lib/logger";
 
 export abstract class HttpServer {
 
@@ -10,11 +10,11 @@ export abstract class HttpServer {
 
     constructor(express: express.Express, logger: AppLogger) {
         if (express) {
-            this.logger = logger
             this.httpServer = http.createServer(express);
         } else {
             this.httpServer = http.createServer();
         }
+        this.logger = logger
     }
 
     public getPort(): Number {

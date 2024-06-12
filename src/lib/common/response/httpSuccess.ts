@@ -1,7 +1,7 @@
+import { AppLogger } from "@base/lib/logger";
 import express from "express";
-import { AppLogger } from "../../logger/logger";
 
-export class Result {
+export class HttpSucess {
   private code: number;
   private data?: any;
 
