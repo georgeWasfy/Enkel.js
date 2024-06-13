@@ -96,17 +96,16 @@ export class ExpressServer extends HttpServer {
 
   private registerInjectable() {
     const constructors = getControllersFromMetadata();
-    // ExpressServer.setGlobalControllers(constructors);
     constructors.forEach((constructor) => {
-      const { name } = constructor as { name: string };
-
+      //@ts-ignore
+      const name  = constructor['name'];
       if (this.container.isBoundNamed("Controller", name)) {
         throw new Error(`Controller with name ${name} is already defined`);
       }
       this.container
-        .bind("Controller")
+        .bind(name)
         .to(constructor as new (...args: Array<never>) => unknown)
-        .whenTargetNamed(name);
+        // .whenTargetNamed(name);
     });
   }
   private async initialize() {
@@ -119,18 +118,17 @@ export class ExpressServer extends HttpServer {
         );
         this.router[route.method](
           `/${controller.urlPrefix}${route.url}`,
-          this.createRouteHandler(route, controller)
+          this.createRouteHandler(route, controller.name)
         );
       }
     }
     this.express.use(this.router);
   }
 
-  private createRouteHandler(route: HttpRoute, controller: HttpController) {
+  private createRouteHandler(route: HttpRoute, controllerName: string) {
     return async (req: express.Request, res: express.Response) => {
-      const handlers = controller.routeHandlers;
-      const handler = handlers.find((h) => h.url === route.url);
-      let result = handler?.callback.apply(req, res);
+      const controllerInstance = this.container.get(controllerName) as any;
+      let result = controllerInstance[route.name](req, res);
       if (result && typeof result.then === "function") {
         try {
           result = await result;

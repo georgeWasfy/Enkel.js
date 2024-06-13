@@ -8,11 +8,14 @@ import { BadRequest } from "@base/lib/common/response/httpError";
 
 @Controller("api")
 export class HelloController {
-  constructor(@inject("HelloService") public _helloService: HelloService) {}
+  private _helloService: HelloService;
+  constructor(@inject("HelloService") _helloService: HelloService) {
+    this._helloService = _helloService;
+  }
 
   // @Header("Cache-Control", "none")
   @Get("/test")
-  private async test(req: Request, res: Response) {
+  public async test(req: Request, res: Response) {
     const resp = this._helloService.t();
     // return res.json({"fgfgf": "ggff"})
     return new HttpSuccess(200, resp);
@@ -20,7 +23,7 @@ export class HelloController {
   }
 
   @Get("/test2")
-  private async testtt() {
+  public async testtt() {
     return new HttpSuccess(200, {
       message: "Hello world!!",
     });
