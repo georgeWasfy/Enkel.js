@@ -19,6 +19,7 @@ import {
   getControllersFromMetadata,
 } from "@base/utils";
 import { HelloService } from "../../../example/components/entity/entity.service";
+import { HttpRoute } from "../common/http";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -106,50 +107,30 @@ export class ExpressServer extends HttpServer {
         .bind("Controller")
         .to(constructor as new (...args: Array<never>) => unknown)
         .whenTargetNamed(name);
-    })
+    });
   }
   private async initialize() {
     for (const controller of ExpressServer.globalControllers) {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
       for (const route of controller.routeHandlers) {
-        this.logger.info(`Registered Route with method ${route.method} on ${route.url}`);
+        this.logger.info(
+          `Registered Route with method ${route.method} on ${route.url}`
+        );
         this.router[route.method](
           `/${controller.urlPrefix}${route.url}`,
-          this.createRoute(route, controller)
+          this.createRouteHandler(route, controller)
         );
       }
     }
     this.express.use(this.router);
   }
 
-  private createRoute(route: any, controller: any) {
+  private createRouteHandler(route: HttpRoute, controller: HttpController) {
     return async (req: express.Request, res: express.Response) => {
-      const values: any[] = [];
-      const controllers = getControllersFromContainer(this.container, true);
-      // controllers.forEach(controller => {
-      //   const controllerMetadata = getControllerMetadata(controller.constructor);
-
-      // });
-      // problem was in the this scope of controller so it doent see this.service.test()
-      // so what needs to be done is dynamically get the class and the handler and invoke the class handler
-      // aka restructure and ditch callbacks defined on httproute class
-      const controllerMetadata = getControllerMetadata(
-        controllers[0].constructor
-      );
-
-      const value = await this.container.getNamed<any>(
-        "Controller",
-        controllerMetadata.target.name
-      );
-      // console.log(
-      //   "🚀 ~ file: express-rest-server.ts:154 ~ ExpressRestServer ~ return ~ value",
-      //   value.test
-      // );
-
-      // let result = route.callback(req, res);
-      let result = value.test(req, res);
-
+      const handlers = controller.routeHandlers;
+      const handler = handlers.find((h) => h.url === route.url);
+      let result = handler?.callback.apply(req, res);
       if (result && typeof result.then === "function") {
         try {
           result = await result;
@@ -158,7 +139,6 @@ export class ExpressServer extends HttpServer {
           result = new Error("Internal server error.");
         }
       }
-
       if (result && ExpressServer.isSuccessResponse(result)) {
         return result.Success(res, this.logger);
       } else if (result && ExpressServer.isErrorResponse(result)) {
