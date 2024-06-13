@@ -95,7 +95,7 @@ export class ExpressServer extends HttpServer {
 
   private registerInjectable() {
     const constructors = getControllersFromMetadata();
-    console.log("🚀 ~ ExpressServer ~ registerInjectable ~ constructors:", constructors)
+    // ExpressServer.setGlobalControllers(constructors);
     constructors.forEach((constructor) => {
       const { name } = constructor as { name: string };
 
@@ -106,23 +106,14 @@ export class ExpressServer extends HttpServer {
         .bind("Controller")
         .to(constructor as new (...args: Array<never>) => unknown)
         .whenTargetNamed(name);
-    });
-
-    const controllers = getControllersFromContainer(this.container, true);
-    // controllers.forEach((controller: any) => {
-    //   const controllerMetadata = getControllerMetadata(controller.constructor);
-    //   console.log(
-    //     "🚀 ~ file: express-rest-server.ts:119 ~ ExpressRestServer ~ controllers.forEach ~ controllerMetadata",
-    //     controllerMetadata
-    //   );
-    // });
+    })
   }
   private async initialize() {
     for (const controller of ExpressServer.globalControllers) {
       this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
       for (const route of controller.routeHandlers) {
-        this.logger.info(route.method + " - " + route.url);
+        this.logger.info(`Registered Route with method ${route.method} on ${route.url}`);
         this.router[route.method](
           `/${controller.urlPrefix}${route.url}`,
           this.createRoute(route, controller)

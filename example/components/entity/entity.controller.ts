@@ -10,8 +10,8 @@ import { BadRequest } from "@base/lib/common/response/httpError";
 export class HelloController {
   constructor(@inject("HelloService") public _helloService: HelloService) {}
 
+  // @Header("Cache-Control", "none")
   @Get("/test")
-  @Header("Cache-Control", "none")
   private async test(req: Request, res: Response) {
     const resp = this._helloService.t();
     // return res.json({"fgfgf": "ggff"})

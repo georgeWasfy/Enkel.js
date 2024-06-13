@@ -3,7 +3,11 @@ import { ExpressServer } from "@base/lib/restServer";
 import { HttpMethodEnum } from "@base/lib/common/http/httpMethodEnum";
 import { HttpController } from "@base/lib/common/http/httpController";
 import { HttpRoute } from "@base/lib/common/http/httpRoute";
-import { CONTROLLER_METADATA, HTTP_METHOD_METADATA, PATH_METADATA } from "@base/constants";
+import {
+  CONTROLLER_METADATA,
+  HTTP_METHOD_METADATA,
+  PATH_METADATA,
+} from "@base/constants";
 
 export function Controller(baseUrl: string): ClassDecorator {
   return function (target: Function) {
@@ -19,23 +23,25 @@ export function Controller(baseUrl: string): ClassDecorator {
     const newMetadata = [currentMetadata, ...previousMetadata];
     Reflect.defineMetadata(CONTROLLER_METADATA, newMetadata, Reflect);
     let routes = [];
-    for (let key in target.prototype) {
-      const routeHandler = target.prototype[key];
-      const path = Reflect.getMetadata(PATH_METADATA, target.prototype, key);
-      const httpMethod: HttpMethodEnum = Reflect.getMetadata(
-        HTTP_METHOD_METADATA,
-        target.prototype,
-        key
-      );
-      const httpRoute = new HttpRoute(
-        null,
-        key,
-        path,
-        HttpMethodEnum[httpMethod],
-        routeHandler,
-        []
-      );
-      routes.push(httpRoute);
+    for (let key of Object.getOwnPropertyNames(target.prototype)) {
+      if (key !== "constructor") {
+        const routeHandler = target.prototype[key];
+        const path = Reflect.getMetadata(PATH_METADATA, target.prototype, key);
+        const httpMethod: HttpMethodEnum = Reflect.getMetadata(
+          HTTP_METHOD_METADATA,
+          target.prototype,
+          key
+        );
+        const httpRoute = new HttpRoute(
+          null,
+          key,
+          path,
+          HttpMethodEnum[httpMethod],
+          routeHandler,
+          []
+        );
+        routes.push(httpRoute);
+      }
     }
     const controller = new HttpController(baseUrl, target.name, routes);
     ExpressServer.setGlobalControllers([controller]);
