@@ -1,8 +1,9 @@
 import "reflect-metadata";
-import './example/components/entity/entity.controller'
+// import './example/components/entity/entity.controller'
 import { ExpressServer } from "@base/lib/restServer";
+import { AppModule } from "app.module";
 
-
+const mainModule = new AppModule()
 const server = new ExpressServer();
 server.setPort(3000);
 // this will be executed before server initialization

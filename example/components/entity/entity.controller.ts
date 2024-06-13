@@ -19,11 +19,11 @@ export class HelloController {
     // return new BadRequest('This is a bad request', {})
   }
 
-  @Get("/testtt")
+  @Get("/test2")
   private async testtt() {
-    // return new Result(200, {
-    //   message: "Hello world!!",
-    // });
-    return new BadRequest("This is a bad request", {});
+    return new HttpSuccess(200, {
+      message: "Hello world!!",
+    });
+    // return new BadRequest("This is a bad request", {});
   }
 }
