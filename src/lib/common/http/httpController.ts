@@ -4,13 +4,12 @@ export class HttpController {
   constructor(
     public urlPrefix: string,
     public name: string,
-    public routeHandlers: HttpRoute[],
-    public services?: any[]
+    public routes: HttpRoute[]
   ) {}
-  get routes() {
-    return this.routeHandlers;
+  getRoutes() {
+    return this.routes;
   }
-  set routes(routes) {
-    this.routeHandlers = routes;
+  setRoutes(routes: HttpRoute[]) {
+    this.routes = routes;
   }
 }

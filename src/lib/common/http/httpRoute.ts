@@ -2,22 +2,11 @@ import express from "express";
 import { HttpMethodEnum } from "./httpMethodEnum";
 
 export type MiddlewareFunction = express.RequestHandler;
-export interface BaseRoute {
-  id: string;
-  name: string;
-  url: string;
-  method: HttpMethodEnum;
-  callback: Function;
-}
 export class HttpRoute {
   constructor(
-    public id: any,
     public name: string,
     public url: any,
     public method: HttpMethodEnum,
-    public callback: Function,
-    public middlewares?: MiddlewareFunction[],
-    public responseHeaders?: object[]
   ) {}
 
   public static getBaseUrl(target: Object): string {
@@ -26,7 +15,6 @@ export class HttpRoute {
 
   public static buildUrl(
     target: Object,
-    method: string,
     url: string,
     root?: string
   ): string {

@@ -31,7 +31,7 @@ export class ExpressServer extends HttpServer {
 
   public logger;
 
-  static globalControllers: HttpController[];
+  static globalControllers: HttpController[] = [];
   static globalServices: any[] = [];
 
   constructor(options?: Options) {
@@ -76,7 +76,9 @@ export class ExpressServer extends HttpServer {
   }
 
   public static setGlobalControllers(controllers: HttpController[]) {
-    this.globalControllers = controllers;
+    this.globalControllers = this.globalControllers.length
+      ? [...this.globalServices, ...controllers]
+      : controllers;
   }
 
   public static setGlobalErvices(services: any[]) {
@@ -115,10 +117,10 @@ export class ExpressServer extends HttpServer {
     });
   }
   private async initialize() {
+    this.logger.info("/***** Initializing Framework :D *****/");
     for (const controller of ExpressServer.globalControllers) {
-      this.logger.info("/***** Initializing MY Framework :D *****/");
       this.logger.info("Loading routes.......");
-      for (const route of controller.routeHandlers) {
+      for (const route of controller.routes) {
         this.logger.info(
           `Registered Route with method ${route.method} on ${route.url}`
         );

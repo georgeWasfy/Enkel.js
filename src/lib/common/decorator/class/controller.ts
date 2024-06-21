@@ -25,7 +25,6 @@ export function Controller(baseUrl: string): ClassDecorator {
     let routes = [];
     for (let key of Object.getOwnPropertyNames(target.prototype)) {
       if (key !== "constructor") {
-        const routeHandler = target.prototype[key];
         const path = Reflect.getMetadata(PATH_METADATA, target.prototype, key);
         const httpMethod: HttpMethodEnum = Reflect.getMetadata(
           HTTP_METHOD_METADATA,
@@ -33,12 +32,9 @@ export function Controller(baseUrl: string): ClassDecorator {
           key
         );
         const httpRoute = new HttpRoute(
-          null,
           key,
           path,
           HttpMethodEnum[httpMethod],
-          routeHandler,
-          []
         );
         routes.push(httpRoute);
       }
