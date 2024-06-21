@@ -15,6 +15,7 @@ import { HttpController } from "@base/lib/common/http/httpController";
 import { HttpError, HttpSuccess } from "@base/lib/common/response";
 import { getControllersFromMetadata } from "@base/utils";
 import { HttpRoute } from "../common/http";
+import { Class } from "./types";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -32,7 +33,7 @@ export class ExpressServer extends HttpServer {
   public logger;
 
   static globalControllers: HttpController[] = [];
-  static globalServices: any[] = [];
+  static globalServices: Class[] = [];
 
   constructor(options?: Options) {
     let application = express();
@@ -77,11 +78,11 @@ export class ExpressServer extends HttpServer {
 
   public static setGlobalControllers(controllers: HttpController[]) {
     this.globalControllers = this.globalControllers.length
-      ? [...this.globalServices, ...controllers]
+      ? [...this.globalControllers, ...controllers]
       : controllers;
   }
 
-  public static setGlobalErvices(services: any[]) {
+  public static setGlobalErvices(services: Class[]) {
     this.globalServices = this.globalServices.length
       ? [...this.globalServices, ...services]
       : services;
