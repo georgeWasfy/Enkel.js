@@ -11,4 +11,6 @@ export interface ModuleMetadata {
      * instantiated.
      */
     controllers?: any[];
+
+    services?: any[];
 }

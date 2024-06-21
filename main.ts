@@ -1,5 +1,4 @@
 import "reflect-metadata";
-// import './example/components/entity/entity.controller'
 import { ExpressServer } from "@base/lib/restServer";
 import { AppModule } from "app.module";
 

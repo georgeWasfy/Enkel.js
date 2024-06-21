@@ -13,12 +13,7 @@ import bodyParser from "body-parser";
 import { HttpServer } from "@base/lib/baseServer/httpServer";
 import { HttpController } from "@base/lib/common/http/httpController";
 import { HttpError, HttpSuccess } from "@base/lib/common/response";
-import {
-  getControllerMetadata,
-  getControllersFromContainer,
-  getControllersFromMetadata,
-} from "@base/utils";
-import { HelloService } from "../../../example/components/entity/entity.service";
+import { getControllersFromMetadata } from "@base/utils";
 import { HttpRoute } from "../common/http";
 
 const DEFAULT_SESSION_SECRET = "220183";
@@ -37,13 +32,13 @@ export class ExpressServer extends HttpServer {
   public logger;
 
   static globalControllers: HttpController[];
+  static globalServices: any[] = [];
 
   constructor(options?: Options) {
     let application = express();
     let applicationLogger = new AppLogger();
     super(application, applicationLogger);
 
-    this.container.bind<HelloService>("HelloService").to(HelloService);
     this.logger = applicationLogger;
     this.express = application;
     this.router = express.Router();
@@ -84,6 +79,12 @@ export class ExpressServer extends HttpServer {
     this.globalControllers = controllers;
   }
 
+  public static setGlobalErvices(services: any[]) {
+    this.globalServices = this.globalServices.length
+      ? [...this.globalServices, ...services]
+      : services;
+  }
+
   public getExpressInstance(): express.Express {
     return this.express;
   }
@@ -96,16 +97,21 @@ export class ExpressServer extends HttpServer {
 
   private registerInjectable() {
     const constructors = getControllersFromMetadata();
+    this.registerServices();
     constructors.forEach((constructor) => {
       //@ts-ignore
-      const name  = constructor['name'];
+      const name = constructor["name"];
       if (this.container.isBoundNamed("Controller", name)) {
         throw new Error(`Controller with name ${name} is already defined`);
       }
       this.container
         .bind(name)
-        .to(constructor as new (...args: Array<never>) => unknown)
-        // .whenTargetNamed(name);
+        .to(constructor as new (...args: Array<never>) => unknown);
+    });
+  }
+  private registerServices() {
+    ExpressServer.globalServices.forEach((service) => {
+      this.container.bind(service.name).to(service);
     });
   }
   private async initialize() {

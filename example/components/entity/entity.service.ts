@@ -1,9 +1,8 @@
-import { injectable } from "inversify";
+import { Service } from "@base/lib/common/decorator";
 
-@injectable()
+@Service()
 export class HelloService {
     public  t() {
         return  {message: 'from service'}
-        // return new BadRequest('This is a bad request', {})
       }
 }
