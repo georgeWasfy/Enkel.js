@@ -9,6 +9,7 @@ import {
   Get,
   Header,
   Post,
+  Query,
 } from "@base/lib/common/decorator";
 import { BadRequest } from "@base/lib/common/response/httpError";
 
@@ -33,9 +34,9 @@ export class HelloController {
     });
   }
   @Get("/test3")
-  public async test3() {
-    return new BadRequest("This is a bad request", {
-      meta: { msg: "Bad request from controller" },
+  public async test3(@Query() query: any) {
+    return new HttpSuccess(200, {
+      query,
     });
   }
   @Post("/test4")

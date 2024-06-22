@@ -138,10 +138,13 @@ export class ExpressServer extends HttpServer {
     return async (req: express.Request, res: express.Response) => {
       const controllerInstance = this.container.get(controllerName) as any;
       // determine which parameters to send to handler
+      //TODO: refactor calling the handler function with correct params
       let params = [] as any;
       let handler = undefined;
       if (route.params) {
-        route.params.forEach((p) => params.splice(p.idx, 0, req.body));
+        route.params.forEach((p) =>
+          params.splice(p.idx, 0, p.type === "body" ? req.body : req.query)
+        );
       }
       if (params.length) {
         handler = controllerInstance[route.name](...params);
