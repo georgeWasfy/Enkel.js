@@ -93,12 +93,12 @@ export class ExpressServer extends HttpServer {
   }
 
   public async start(): Promise<any> {
-    this.registerInjectable();
+    this.registerInjectables();
     await this.initialize();
     return await super.start();
   }
 
-  private registerInjectable() {
+  private registerInjectables() {
     const constructors = getControllersFromMetadata();
     this.registerServices();
     constructors.forEach((constructor) => {
@@ -137,25 +137,38 @@ export class ExpressServer extends HttpServer {
   private createRouteHandler(route: HttpRoute, controllerName: string) {
     return async (req: express.Request, res: express.Response) => {
       const controllerInstance = this.container.get(controllerName) as any;
-      let result = controllerInstance[route.name](req, res);
-      if (result && typeof result.then === "function") {
+      // determine which parameters to send to handler
+      let params = [] as any;
+      let handler = undefined;
+      if (route.params) {
+        route.params.forEach((p) => params.splice(p.idx, 0, req.body));
+      }
+      if (params.length) {
+        handler = controllerInstance[route.name](...params);
+      } else {
+        handler = controllerInstance[route.name](req, res);
+      }
+      let result = undefined;
+      if (handler && typeof handler.then === "function") {
         try {
-          result = await result;
+          result = await handler;
         } catch (e) {
           this.logger.error("Internal server error.", e);
           result = new Error("Internal server error.");
         }
       }
+
       if (result && ExpressServer.isSuccessResponse(result)) {
         return result.Success(res, this.logger);
-      } else if (result && ExpressServer.isErrorResponse(result)) {
+      }
+      if (result && ExpressServer.isErrorResponse(result)) {
         return result.Error(res, this.logger);
-      } else if (result && ExpressServer.isexpressResponse(result)) {
+      }
+      if (result && ExpressServer.isexpressResponse(result)) {
         // needs logging
         return res;
-      } else {
-        throw new Error("Invalid return type.");
       }
+      throw new Error("Invalid return type.");
     };
   }
 

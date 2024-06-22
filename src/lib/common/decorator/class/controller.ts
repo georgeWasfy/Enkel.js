@@ -6,6 +6,7 @@ import { HttpRoute } from "@base/lib/common/http/httpRoute";
 import {
   CONTROLLER_METADATA,
   HTTP_METHOD_METADATA,
+  PARAMETER_METADATA,
   PATH_METADATA,
 } from "@base/constants";
 
@@ -17,7 +18,7 @@ export function Controller(baseUrl: string): ClassDecorator {
       target,
     };
     decorate(injectable(), target);
-    Reflect.defineMetadata(CONTROLLER_METADATA, currentMetadata, target);
+    // Reflect.defineMetadata(CONTROLLER_METADATA, currentMetadata, target);
     const previousMetadata: Array<any> =
       (Reflect.getMetadata(CONTROLLER_METADATA, Reflect) as Array<any>) || [];
     const newMetadata = [currentMetadata, ...previousMetadata];
@@ -26,6 +27,7 @@ export function Controller(baseUrl: string): ClassDecorator {
     for (let key of Object.getOwnPropertyNames(target.prototype)) {
       if (key !== "constructor") {
         const path = Reflect.getMetadata(PATH_METADATA, target.prototype, key);
+        const params = Reflect.getMetadata(PARAMETER_METADATA, target.prototype, key);
         const httpMethod: HttpMethodEnum = Reflect.getMetadata(
           HTTP_METHOD_METADATA,
           target.prototype,
@@ -35,6 +37,7 @@ export function Controller(baseUrl: string): ClassDecorator {
           key,
           path,
           HttpMethodEnum[httpMethod],
+          params && params.length ? params : undefined
         );
         routes.push(httpRoute);
       }

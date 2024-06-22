@@ -3,7 +3,13 @@ import { inject } from "inversify";
 
 import { HelloService } from "./entity.service";
 import { HttpSuccess } from "@base/lib/common/response";
-import { Controller, Get, Header } from "@base/lib/common/decorator";
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Post,
+} from "@base/lib/common/decorator";
 import { BadRequest } from "@base/lib/common/response/httpError";
 
 @Controller("api")
@@ -14,19 +20,29 @@ export class HelloController {
   }
 
   // @Header("Cache-Control", "none")
-  @Get("/test")
+  @Get("/test1")
   public async test(req: Request, res: Response) {
-    const resp = this._helloService.t();
-    // return res.json({"fgfgf": "ggff"})
+    const resp = this._helloService.test1();
     return new HttpSuccess(200, resp);
-    // return new BadRequest('This is a bad request', {})
   }
 
   @Get("/test2")
-  public async testtt() {
+  public async test2() {
     return new HttpSuccess(200, {
-      message: "Hello world!!",
+      message: "Hello from controller",
     });
-    // return new BadRequest("This is a bad request", {});
+  }
+  @Get("/test3")
+  public async test3() {
+    return new BadRequest("This is a bad request", {
+      meta: { msg: "Bad request from controller" },
+    });
+  }
+  @Post("/test4")
+  public async test4(@Body() x: any, @Body() y: any) {
+    return new HttpSuccess(200, {
+      x,
+      y,
+    });
   }
 }
