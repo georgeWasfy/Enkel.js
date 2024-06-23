@@ -7,6 +7,6 @@ export class HttpRoute {
     public name: string,
     public url: string,
     public method: HttpMethodEnum,
-    public params?: { type: string; idx: number }[]
+    public params?: { type: string; idx: number; identifier?: string }[]
   ) {}
 }

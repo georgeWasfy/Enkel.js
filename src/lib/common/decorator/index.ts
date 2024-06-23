@@ -10,7 +10,6 @@ export { Delete } from "./method/delete";
 
 export { Body } from "./parameter/body";
 export { Query } from "./parameter/query";
-
-
+export { Param } from "./parameter/param";
 
 export { Header } from "./method/header";

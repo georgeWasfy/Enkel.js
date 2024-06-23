@@ -8,6 +8,7 @@ import {
   Controller,
   Get,
   Header,
+  Param,
   Post,
   Query,
 } from "@base/lib/common/decorator";
@@ -44,6 +45,12 @@ export class HelloController {
     return new HttpSuccess(200, {
       x,
       y,
+    });
+  }
+  @Get("/test5/:id")
+  public async test5(@Param('id') id: any) {
+    return new HttpSuccess(200, {
+      id,
     });
   }
 }
