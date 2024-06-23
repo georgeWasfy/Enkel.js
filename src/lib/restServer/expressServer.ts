@@ -16,6 +16,8 @@ import { HttpError, HttpSuccess } from "@base/lib/common/response";
 import { getControllersFromMetadata } from "@base/utils";
 import { HttpRoute } from "../common/http";
 import { Class } from "./types";
+import { ctx } from "./context";
+import { RouteHandlerFactory } from "./routeHandlerFactory";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -94,13 +96,21 @@ export class ExpressServer extends HttpServer {
 
   public async start(): Promise<any> {
     this.registerInjectables();
-    await this.initialize();
+    await this.registerRoutes();
     return await super.start();
   }
 
   private registerInjectables() {
-    const constructors = getControllersFromMetadata();
+    this.registerControllers();
     this.registerServices();
+  }
+  private registerServices() {
+    ExpressServer.globalServices.forEach((service) => {
+      this.container.bind(service.name).to(service);
+    });
+  }
+  private registerControllers() {
+    const constructors = getControllersFromMetadata();
     constructors.forEach((constructor) => {
       //@ts-ignore
       const name = constructor["name"];
@@ -112,12 +122,7 @@ export class ExpressServer extends HttpServer {
         .to(constructor as new (...args: Array<never>) => unknown);
     });
   }
-  private registerServices() {
-    ExpressServer.globalServices.forEach((service) => {
-      this.container.bind(service.name).to(service);
-    });
-  }
-  private async initialize() {
+  private async registerRoutes() {
     this.logger.info("/***** Initializing Framework :D *****/");
     for (const controller of ExpressServer.globalControllers) {
       this.logger.info("Loading routes.......");
@@ -137,20 +142,12 @@ export class ExpressServer extends HttpServer {
   private createRouteHandler(route: HttpRoute, controllerName: string) {
     return async (req: express.Request, res: express.Response) => {
       const controllerInstance = this.container.get(controllerName) as any;
-      // determine which parameters to send to handler
-      //TODO: refactor calling the handler function with correct params
-      let params = [] as any;
-      let handler = undefined;
-      if (route.params) {
-        route.params.forEach((p) =>
-          params.splice(p.idx, 0, p.type === "body" ? req.body : req.query)
-        );
-      }
-      if (params.length) {
-        handler = controllerInstance[route.name](...params);
-      } else {
-        handler = controllerInstance[route.name](req, res);
-      }
+      const context = new ctx(req, res);
+      const handler = new RouteHandlerFactory(
+        context,
+        route,
+        controllerInstance[route.name]
+      ).getHandler();
       let result = undefined;
       if (handler && typeof handler.then === "function") {
         try {

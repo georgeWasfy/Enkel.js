@@ -47,10 +47,11 @@ export class HelloController {
       y,
     });
   }
-  @Get("/test5/:id")
-  public async test5(@Param('id') id: any) {
+  @Get("/test5/:id/test/:id2")
+  public async test5(@Param('id') id: any, @Param('id2') id2: any) {
     return new HttpSuccess(200, {
       id,
+      id2
     });
   }
 }
