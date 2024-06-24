@@ -13,6 +13,7 @@ import {
   Query,
 } from "@base/lib/common/decorator";
 import { BadRequest } from "@base/lib/common/response/httpError";
+import { ctx } from "@base/lib/restServer/context";
 
 @Controller("api")
 export class HelloController {
@@ -29,9 +30,10 @@ export class HelloController {
   }
 
   @Get("/test2")
-  public async test2() {
+  public async test2({request}: ctx) {
     return new HttpSuccess(200, {
       message: "Hello from controller",
+      data: request
     });
   }
   @Get("/test3")

@@ -124,8 +124,9 @@ export class ExpressServer extends HttpServer {
   }
   private async registerRoutes() {
     this.logger.info("/***** Initializing Framework :D *****/");
+    this.logger.info("Loading routes.......");
     for (const controller of ExpressServer.globalControllers) {
-      this.logger.info("Loading routes.......");
+      this.logger.info(`Registering routes in ${controller.name}`);
       for (const route of controller.routes) {
         this.logger.info(
           `Registered Route with method ${route.method} on ${route.url}`

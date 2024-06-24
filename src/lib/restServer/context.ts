@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
+import { IEnkelRequest } from "./types";
+import { EnkelRequest } from "./request";
 
 export class ctx {
-  public req: Request;
+  public request: IEnkelRequest;
 
   public res: Response;
 
@@ -17,7 +19,7 @@ export class ctx {
   public cookies: Object;
 
   constructor(req: Request, res: Response) {
-    this.req = req;
+    this.request = new EnkelRequest(req);
     this.res = res;
     this.body = req.body || {};
     this.params = req.params || {};

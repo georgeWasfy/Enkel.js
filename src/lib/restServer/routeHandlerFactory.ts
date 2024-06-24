@@ -19,7 +19,7 @@ export class RouteHandlerFactory {
       );
       return this.handler(...params);
     }
-    return this.handler(ctx);
+    return this.handler(this.ctx);
   }
 
   private resolveParam(type: HandlerParameterType, identifier?: string) {
