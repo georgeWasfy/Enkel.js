@@ -8,7 +8,9 @@ import {
   HTTP_METHOD_METADATA,
   PARAMETER_METADATA,
   PATH_METADATA,
+  Validation_METADATA,
 } from "@base/constants";
+import { validationMiddleware } from "@base/lib/middleware/validation-middleware";
 
 export function Controller(baseUrl: string): ClassDecorator {
   return function (target: Function) {
@@ -27,7 +29,16 @@ export function Controller(baseUrl: string): ClassDecorator {
     for (let key of Object.getOwnPropertyNames(target.prototype)) {
       if (key !== "constructor") {
         const path = Reflect.getMetadata(PATH_METADATA, target.prototype, key);
-        const params = Reflect.getMetadata(PARAMETER_METADATA, target.prototype, key);
+        const params = Reflect.getMetadata(
+          PARAMETER_METADATA,
+          target.prototype,
+          key
+        );
+        const validationSchema = Reflect.getMetadata(
+          Validation_METADATA,
+          target.prototype,
+          key
+        );
         const httpMethod: HttpMethodEnum = Reflect.getMetadata(
           HTTP_METHOD_METADATA,
           target.prototype,
@@ -37,7 +48,9 @@ export function Controller(baseUrl: string): ClassDecorator {
           key,
           path,
           HttpMethodEnum[httpMethod],
-          params && params.length ? params : undefined
+          [validationMiddleware],
+          params && params.length ? params : undefined,
+          validationSchema
         );
         routes.push(httpRoute);
       }

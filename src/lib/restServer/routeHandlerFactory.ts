@@ -37,4 +37,20 @@ export class RouteHandlerFactory {
         throw new Error("Unkown decorated parameter");
     }
   }
+
+  // private validateRequest() {
+  //   if (this.routeInfo.validationSchema !== undefined) {
+  //     Object.keys(this.routeInfo.validationSchema).forEach((v) => {
+  //       if (v === "body") {
+  //         const result = this.ctx.request.validateBodyUsing(
+  //           //@ts-ignore
+  //           this.routeInfo.validationSchema[v]
+  //         );
+  //         if (result.error) {
+  //           this.ctx.res.send(result.error)
+  //         }
+  //       }
+  //     });
+  //   }
+  // }
 }

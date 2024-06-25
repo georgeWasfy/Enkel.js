@@ -1,3 +1,5 @@
+import Joi from "joi";
+
 export type Class = { new (...args: any[]): any };
 export interface CookieOptions {
   maxAge?: number | undefined;
@@ -185,7 +187,9 @@ export interface IEnkelRequest {
 
   baseUrl: string;
 
-  toJSON(): Object
+  toJSON(): Object;
+
+  validateBody(schema?: Joi.Schema): Joi.ValidationResult
 }
 
 export interface EnkelResponse {
@@ -308,3 +312,17 @@ export interface EnkelResponse {
    */
   redirect(url: string): void;
 }
+
+export type validate = {
+  header: Joi.Schema;
+  params: Joi.Schema;
+  query: Joi.Schema;
+  body: Joi.Schema;
+  type: "json" | "form" | "multipart";
+  failureCode: number;
+  meta: {
+    desc: string;
+    produces: string[];
+    responseModel: any;
+  };
+};
