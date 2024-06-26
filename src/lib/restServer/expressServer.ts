@@ -152,7 +152,7 @@ export class ExpressServer extends HttpServer {
       const handler = new RouteHandlerFactory(
         context,
         route,
-        controllerInstance[route.name]
+        controllerInstance
       ).getHandler();
       let result = undefined;
       if (handler && typeof handler.then === "function") {
@@ -160,7 +160,6 @@ export class ExpressServer extends HttpServer {
           result = await handler;
         } catch (e) {
           this.logger.error("Internal server error.", e);
-          result = new Error("Internal server error.");
         }
       }
 
