@@ -6,6 +6,7 @@ import { HttpRoute } from "@base/lib/common/http/httpRoute";
 import {
   CONTROLLER_METADATA,
   HTTP_METHOD_METADATA,
+  MIDDLEWARE_METADATA,
   PARAMETER_METADATA,
   PATH_METADATA,
   Validation_METADATA,
@@ -39,16 +40,29 @@ export function Controller(baseUrl: string): ClassDecorator {
           target.prototype,
           key
         );
+        const middlewares = Reflect.getMetadata(
+          MIDDLEWARE_METADATA,
+          target.prototype,
+          key
+        );
         const httpMethod: HttpMethodEnum = Reflect.getMetadata(
           HTTP_METHOD_METADATA,
           target.prototype,
           key
         );
+        let routeMiddlewares = []
+        if (middlewares) {
+          routeMiddlewares = middlewares
+        }
+        if (validationSchema) {
+          routeMiddlewares.push(validationMiddleware)
+        }
+
         const httpRoute = new HttpRoute(
           key,
           path,
           HttpMethodEnum[httpMethod],
-          [validationMiddleware],
+          routeMiddlewares,
           params && params.length ? params : undefined,
           validationSchema
         );

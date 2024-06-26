@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { inject } from "inversify";
 
 import { HelloService } from "./entity.service";
@@ -8,14 +7,15 @@ import {
   Controller,
   Get,
   Header,
+  Middleware,
   Param,
   Post,
   Query,
   Validate,
 } from "@base/lib/common/decorator";
-import { BadRequest } from "@base/lib/common/response/httpError";
 import { ctx } from "@base/lib/restServer/context";
 import { validationSchema } from "./entity.schema";
+import { testMiddleware } from "./entity.middleware";
 
 @Controller("api")
 export class HelloController {
@@ -24,9 +24,10 @@ export class HelloController {
     this._helloService = _helloService;
   }
 
-  // @Header("Cache-Control", "none")
   @Get("/test1")
-  public async test(req: Request, res: Response) {
+  @Middleware([testMiddleware])
+  public async test({ request, headers }: ctx) {
+    console.log(headers);
     const resp = this._helloService.test1();
     return new HttpSuccess(200, resp);
   }

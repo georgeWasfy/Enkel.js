@@ -8,7 +8,7 @@ export { Patch } from "./method/patch";
 export { Put } from "./method/put";
 export { Delete } from "./method/delete";
 export { Validate } from "./method/validate";
-
+export { Middleware } from "./method/middleware";
 
 export { Body } from "./parameter/body";
 export { Query } from "./parameter/query";
