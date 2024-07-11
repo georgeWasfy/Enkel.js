@@ -18,6 +18,7 @@ import { HttpRoute } from "../common/http";
 import { Class } from "./types";
 import { ctx } from "./context";
 import { RouteHandlerFactory } from "./routeHandlerFactory";
+import { MiddlewareFunction } from "../common/http/httpRoute";
 
 const DEFAULT_SESSION_SECRET = "220183";
 
@@ -139,15 +140,20 @@ export class ExpressServer extends HttpServer {
     }
     this.express.use(this.router);
   }
-
   private createRouteHandler(route: HttpRoute, controllerName: string) {
-    return async (req: express.Request, res: express.Response) => {
+    return async (req: express.Request, res: express.Response, next: MiddlewareFunction) => {
       const controllerInstance = this.container.get(controllerName) as any;
-      const context = new ctx(req, res);
+      const context = new ctx(req, res, route);
+      for (const middleware of route.middlewares) {
+        await middleware(context, next);
+        if (res.headersSent) {
+          return;
+        }
+      }
       const handler = new RouteHandlerFactory(
         context,
         route,
-        controllerInstance[route.name]
+        controllerInstance
       ).getHandler();
       let result = undefined;
       if (handler && typeof handler.then === "function") {
@@ -155,7 +161,6 @@ export class ExpressServer extends HttpServer {
           result = await handler;
         } catch (e) {
           this.logger.error("Internal server error.", e);
-          result = new Error("Internal server error.");
         }
       }
 

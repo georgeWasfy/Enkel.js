@@ -1,25 +1,25 @@
 import { Request, Response } from "express";
-import { IEnkelRequest } from "./types";
+import { IEnkelRequest, ParamsDictionary, ReqQuery } from "./types";
 import { EnkelRequest } from "./request";
+import { HttpRoute } from "../common/http";
 
 export class ctx {
   public request: IEnkelRequest;
 
   public res: Response;
 
-  // better ways to type
   public body: Object;
 
-  public params: any;
+  public params: ParamsDictionary;
 
-  public query: Object;
+  public query: ReqQuery;
 
   public headers: Object;
 
   public cookies: Object;
 
-  constructor(req: Request, res: Response) {
-    this.request = new EnkelRequest(req);
+  constructor(req: Request, res: Response, private httpRoute: HttpRoute) {
+    this.request = new EnkelRequest(req, httpRoute);
     this.res = res;
     this.body = req.body || {};
     this.params = req.params || {};
@@ -27,5 +27,4 @@ export class ctx {
     this.headers = req.header || {};
     this.cookies = req.cookies || {};
   }
-
 }

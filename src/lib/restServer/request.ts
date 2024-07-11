@@ -1,5 +1,13 @@
 import { Request } from "express";
-import { IEnkelRequest, MediaType, ParamsDictionary, ReqQuery } from "./types";
+import {
+  IEnkelRequest,
+  MediaType,
+  ParamsDictionary,
+  ReqQuery,
+  validate,
+} from "./types";
+import Joi from "joi";
+import { HttpRoute } from "../common/http";
 
 export class EnkelRequest implements IEnkelRequest {
   accepted: MediaType[];
@@ -20,7 +28,8 @@ export class EnkelRequest implements IEnkelRequest {
   originalUrl: string;
   url: string;
   baseUrl: string;
-  constructor(private req: Request) {
+  validationSchema: validate | undefined;
+  constructor(private req: Request, private httpRoute: HttpRoute) {
     this.accepted = req.accepted;
     this.protocol = req.protocol;
     this.secure = req.secure;
@@ -39,6 +48,7 @@ export class EnkelRequest implements IEnkelRequest {
     this.originalUrl = req.originalUrl;
     this.url = req.url;
     this.baseUrl = req.baseUrl;
+    this.validationSchema = httpRoute.validationSchema;
   }
 
   get(name: string): string | undefined {
@@ -56,6 +66,46 @@ export class EnkelRequest implements IEnkelRequest {
   acceptsEncodings(...encoding: string[]): string | false {
     return this.req.acceptsEncodings(...encoding);
   }
+  validateBody(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.body);
+    }
+    if (this.validationSchema?.body) {
+      return this.validationSchema.body.validate(this.body);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateHeaders(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.headers);
+    }
+    if (this.validationSchema?.headers) {
+      return this.validationSchema.headers.validate(this.req.headers);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateParams(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.params);
+    }
+    if (this.validationSchema?.params) {
+      return this.validationSchema.params.validate(this.req.params);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateQuery(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.query);
+    }
+    if (this.validationSchema?.query) {
+      return this.validationSchema.query.validate(this.req.query);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
   public toJSON() {
     return {
       accepted: this.accepted,

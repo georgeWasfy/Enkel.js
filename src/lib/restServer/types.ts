@@ -1,3 +1,6 @@
+import Joi from "joi";
+import { HttpStatusCode } from "./httpStatusCodes";
+
 export type Class = { new (...args: any[]): any };
 export interface CookieOptions {
   maxAge?: number | undefined;
@@ -185,7 +188,18 @@ export interface IEnkelRequest {
 
   baseUrl: string;
 
-  toJSON(): Object
+  validationSchema: validate | undefined;
+
+  toJSON(): Object;
+
+  validateBody(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateHeaders(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateParams(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateQuery(schema?: Joi.Schema): Joi.ValidationResult;
+
 }
 
 export interface EnkelResponse {
@@ -308,3 +322,17 @@ export interface EnkelResponse {
    */
   redirect(url: string): void;
 }
+
+export type validate = {
+  headers?: Joi.Schema;
+  params?: Joi.Schema;
+  query?: Joi.Schema;
+  body?: Joi.Schema;
+  type: "json" | "form" | "multipart";
+  failureCode: HttpStatusCode;
+  meta?: {
+    desc: string;
+    produces: string[];
+    responseModel: any;
+  };
+};
