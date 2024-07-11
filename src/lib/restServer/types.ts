@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { HttpStatusCode } from "./httpStatusCodes";
 
 export type Class = { new (...args: any[]): any };
 export interface CookieOptions {
@@ -187,9 +188,18 @@ export interface IEnkelRequest {
 
   baseUrl: string;
 
+  validationSchema: validate | undefined;
+
   toJSON(): Object;
 
-  validateBody(schema?: Joi.Schema): Joi.ValidationResult
+  validateBody(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateHeaders(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateParams(schema?: Joi.Schema): Joi.ValidationResult;
+
+  validateQuery(schema?: Joi.Schema): Joi.ValidationResult;
+
 }
 
 export interface EnkelResponse {
@@ -314,13 +324,13 @@ export interface EnkelResponse {
 }
 
 export type validate = {
-  header: Joi.Schema;
-  params: Joi.Schema;
-  query: Joi.Schema;
-  body: Joi.Schema;
+  headers?: Joi.Schema;
+  params?: Joi.Schema;
+  query?: Joi.Schema;
+  body?: Joi.Schema;
   type: "json" | "form" | "multipart";
-  failureCode: number;
-  meta: {
+  failureCode: HttpStatusCode;
+  meta?: {
     desc: string;
     produces: string[];
     responseModel: any;

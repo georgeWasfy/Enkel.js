@@ -27,7 +27,6 @@ export class HelloController {
   @Get("/test1")
   @Middleware([testMiddleware])
   public async test({ request, headers }: ctx) {
-    console.log(headers);
     const resp = this._helloService.test1();
     return new HttpSuccess(200, resp);
   }
@@ -47,6 +46,7 @@ export class HelloController {
   }
   @Post("/test4")
   @Validate(validationSchema)
+  @Middleware([testMiddleware])
   public async test4(@Body() x: any, @Body() y: any) {
     return new HttpSuccess(200, {
       x,

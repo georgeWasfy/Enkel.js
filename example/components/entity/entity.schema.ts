@@ -2,7 +2,7 @@ import { validate } from "@base/lib/restServer/types";
 import Joi from "joi";
 
 const headerSchema = Joi.object({
-  "x-user": Joi.number().min(0).required,
+  "x-user": Joi.number().min(0).required(),
 });
 
 const querySchema = Joi.object({
@@ -17,7 +17,7 @@ const bodySchema = Joi.object({
   roles: Joi.array().items(Joi.string()).required(),
 });
 export const validationSchema: validate = {
-  header: headerSchema,
+  headers: headerSchema,
   params: Joi.object({}),
   query: querySchema,
   body: bodySchema,

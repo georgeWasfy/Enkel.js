@@ -50,14 +50,14 @@ export function Controller(baseUrl: string): ClassDecorator {
           target.prototype,
           key
         );
-        let routeMiddlewares = []
-        if (middlewares) {
-          routeMiddlewares = middlewares
-        }
+        let routeMiddlewares = [];
         if (validationSchema) {
-          routeMiddlewares.push(validationMiddleware)
+          routeMiddlewares.push(validationMiddleware);
         }
-
+        if (middlewares) {
+          routeMiddlewares = [...routeMiddlewares, ...middlewares];
+        }
+        
         const httpRoute = new HttpRoute(
           key,
           path,

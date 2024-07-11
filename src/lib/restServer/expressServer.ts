@@ -144,10 +144,11 @@ export class ExpressServer extends HttpServer {
     return async (req: express.Request, res: express.Response, next: MiddlewareFunction) => {
       const controllerInstance = this.container.get(controllerName) as any;
       const context = new ctx(req, res, route);
-      // call first middleware???works but very bad
-      await route.middlewares[0](context, next)
-      if (res.headersSent) {
-        return
+      for (const middleware of route.middlewares) {
+        await middleware(context, next);
+        if (res.headersSent) {
+          return;
+        }
       }
       const handler = new RouteHandlerFactory(
         context,

@@ -28,7 +28,7 @@ export class EnkelRequest implements IEnkelRequest {
   originalUrl: string;
   url: string;
   baseUrl: string;
-  private validationSchema: validate | undefined;
+  validationSchema: validate | undefined;
   constructor(private req: Request, private httpRoute: HttpRoute) {
     this.accepted = req.accepted;
     this.protocol = req.protocol;
@@ -72,6 +72,36 @@ export class EnkelRequest implements IEnkelRequest {
     }
     if (this.validationSchema?.body) {
       return this.validationSchema.body.validate(this.body);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateHeaders(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.headers);
+    }
+    if (this.validationSchema?.headers) {
+      return this.validationSchema.headers.validate(this.req.headers);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateParams(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.params);
+    }
+    if (this.validationSchema?.params) {
+      return this.validationSchema.params.validate(this.req.params);
+    }
+    throw new Error("No Validation Schema Provided");
+  }
+
+  validateQuery(schema?: Joi.Schema) {
+    if (schema) {
+      return schema.validate(this.req.query);
+    }
+    if (this.validationSchema?.query) {
+      return this.validationSchema.query.validate(this.req.query);
     }
     throw new Error("No Validation Schema Provided");
   }
